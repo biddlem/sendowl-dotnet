@@ -11,6 +11,8 @@ Initialize the client with your key and secret
 var sendOwl = new SendOwlAPIClient("mykey", "mysecret");
 ```
 
+### Product
+
 Get product by id
 ```c#
  var product = await sendOwl.Product.GetAsync(123456);
@@ -18,10 +20,39 @@ Get product by id
 
 Search for product by name
 ```c#
-var products = await sendOwl.Products.SearchAsync("product name");
+var products = await sendOwl.Product.SearchAsync("product name");
 ```
 
 List all products
 ```c#
  var products = await sendOwl.Product.GetAllAsync();
+```
+
+Create product
+```c#
+ var product = await sendOwl.Product.CreateAsync(
+   new SendOwlProduct
+   {
+     Name = "my product",
+     Price = "19.99",
+     Product_type = ProductType.Software
+   }
+ );
+```
+
+### Bundle
+
+Get bundle by id
+```c#
+ var bundle = await sendOwl.Product.GetAsync(256);
+```
+
+List all bundles
+```c#
+ var bundles = await sendOwl.Bundle.GetAllAsync();
+```
+
+Delete bundle
+```c#
+ await sendOwl.Bundle.DeleteAsync(256);
 ```

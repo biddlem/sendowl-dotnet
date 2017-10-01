@@ -4,4 +4,4 @@ mono: none
 dotnet: 2.0.0
 script:
   - scripts/build.sh --quiet verify
-  - scripts/publish.sh --quiet verify
+  - scripts/package.sh --quiet verify

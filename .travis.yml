@@ -3,5 +3,5 @@ dist: trusty
 mono: none
 dotnet: 2.0.0
 script:
-  - ./script/build.sh --quiet verify
-  - ./script/publish.sh --quiet verify
+  - scripts/build.sh --quiet verify
+  - scripts/publish.sh --quiet verify

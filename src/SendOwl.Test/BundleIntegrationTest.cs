@@ -29,7 +29,7 @@ namespace SendOwl.Test
         [Fact]
         public async Task GetAsync()
         {
-            var bundle = await endpoint.GetAsync(123456);
+            var bundle = await endpoint.GetAsync(51579);
             bundle.ShouldNotBeNull();
         }
 

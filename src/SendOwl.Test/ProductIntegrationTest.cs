@@ -2,6 +2,7 @@
 using SendOwl.Model;
 using Shouldly;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -30,7 +31,7 @@ namespace SendOwl.Test
         [Fact]
         public async Task GetAsync()
         {
-            var product = await endpoint.GetAsync(123456);
+            var product = await endpoint.GetAsync(453483);
             product.ShouldNotBeNull();
         }
 

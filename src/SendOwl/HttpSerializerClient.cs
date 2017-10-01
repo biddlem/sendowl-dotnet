@@ -16,7 +16,8 @@ namespace SendOwl
         Task<T> PostAsync<T>(string relativeUrl, T obj);
         Task PutAsync<T>(string relativeUrl, T obj);
         Task DeleteAsync(string relativeUrl);
-        Task<TResult> PostMultipartAsync<TResult, YObject>(string relativeUrl, YObject content, string resource);
+        Task<TResult> PostMultipartAsync<TResult, YObject>(string relativeUrl, YObject obj, string resource);
+        Task<TResult> PostMultipartAsync<TResult, YObject>(string relativeUrl, YObject obj, string resource, Stream stream, string fileName, string attachmentFieldName = "attachement");
     }
 
     public class HttpSerializerClient : IHttpSerializerClient
@@ -65,15 +66,25 @@ namespace SendOwl
 
         public async Task<TResult> PostMultipartAsync<TResult, YObject>(string relativeUrl, YObject obj, string resource)
         {
+            return await PostMultipartAsync<TResult, YObject>(relativeUrl, obj, resource, null, null);
+        }
+
+        public async Task<TResult> PostMultipartAsync<TResult, YObject>(string relativeUrl, YObject obj, string resource, Stream stream, string fileName, string attachmentFieldName = "attachment")
+        {
             var form = new MultipartFormDataContent();
-            foreach(var prop in typeof(YObject).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
+            foreach (var prop in typeof(YObject).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
             {
-                if (prop.GetSetMethod() == null || !prop.CanWrite || ! prop.CanRead) continue; //ignore not settable properties;
+                if (prop.GetSetMethod() == null || !prop.CanWrite || !prop.CanRead) continue; //ignore not settable properties;
                 var name = prop.Name.ToLowerInvariant();
                 var value = prop.GetValue(obj, null);
                 var defaultValue = GetDefault(prop.PropertyType);
                 if (value == null || (name == "id" && value.Equals(defaultValue))) continue; //ignore id property if it is null or default
                 form.Add(new StringContent(value.ToString()), $"{resource}[{name}]");
+            }
+
+            if(stream != null)
+            {
+                form.Add(new StreamContent(stream), $"{resource}[{attachmentFieldName}]", fileName);
             }
             var response = await client.PostAsync(relativeUrl, form);
             response.EnsureSuccessStatusCode();

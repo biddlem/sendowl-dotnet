@@ -59,6 +59,28 @@ namespace SendOwl.Test
             result.Id.ShouldBeGreaterThan(1);
         }
 
+        [Fact(Skip = "not working because SendOwl bug - (Cloudflare - are you human?) response)")]
+        public async Task CreateAsync_With_File_Upload()
+        {
+            var product = new SendOwlProduct
+            {
+                Name = TestProductName + "[Cat]",
+                Price = "1.99",
+                Product_type = ProductType.Digital,
+            };
+
+            using (var stream = File.OpenRead("cat.jpg"))
+            {
+                var result = await endpoint.CreateAsync(product, stream, "cat.jpg");
+                CreatedProductIds.Add(result.Id);
+                result.Name.ShouldBe(product.Name);
+                result.Price.ShouldBe(product.Price);
+                result.Product_type.ShouldBe(product.Product_type);
+                result.Attachment.Filename.ShouldBe("cat.jpg");
+                result.Id.ShouldBeGreaterThan(1);
+            }
+        }
+
         [Fact]
         public async Task UpdateAsync()
         {

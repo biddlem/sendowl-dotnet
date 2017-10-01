@@ -1,5 +1,6 @@
 ﻿using SendOwl.Model;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace SendOwl.Endpoints
@@ -49,6 +50,18 @@ namespace SendOwl.Endpoints
         public async Task<SendOwlProduct> CreateAsync(SendOwlProduct product)
         {
             return (await httpClient.PostMultipartAsync<SendOwlProductListItem, SendOwlProduct>(Path, product, "product")).Product;
+        }
+
+        /// <summary>
+        /// Create product with uploaded file
+        /// </summary>
+        /// <param name="product"></param>
+        /// <param name="file stream"></param>
+        /// <param name="file name"></param>
+        /// <returns></returns>
+        public async Task<SendOwlProduct> CreateAsync(SendOwlProduct product, Stream stream, string fileName)
+        {
+            return (await httpClient.PostMultipartAsync<SendOwlProductListItem, SendOwlProduct>(Path, product, "product", stream, fileName)).Product;
         }
 
         /// <summary>

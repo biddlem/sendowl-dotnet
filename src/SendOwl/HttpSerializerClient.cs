@@ -14,6 +14,7 @@ namespace SendOwl
     {
         Task<T> GetAsync<T>(string relativeUrl);
         Task<T> PostAsync<T>(string relativeUrl, T obj);
+        Task PutAsync<T>(string relativeUrl, T obj);
         Task DeleteAsync(string relativeUrl);
         Task<TResult> PostMultipartAsync<TResult, YObject>(string relativeUrl, YObject content, string resource);
     }
@@ -50,6 +51,13 @@ namespace SendOwl
             return LowercaseJsonSerializer.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
         }
 
+        public async Task PutAsync<T>(string relativeUrl, T obj)
+        {
+            var json = LowercaseJsonSerializer.SerializeObject(obj);
+            var response = await client.PutAsync(relativeUrl, new StringContent(json, Encoding.UTF8, JsonContentType));
+            response.EnsureSuccessStatusCode();
+        }
+
         public async Task DeleteAsync(string relativeUrl)
         {
             (await client.DeleteAsync(relativeUrl)).EnsureSuccessStatusCode();
@@ -60,10 +68,11 @@ namespace SendOwl
             var form = new MultipartFormDataContent();
             foreach(var prop in typeof(YObject).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
             {
+                if (prop.GetSetMethod() == null || !prop.CanWrite || ! prop.CanRead) continue; //ignore not settable properties;
                 var name = prop.Name.ToLowerInvariant();
                 var value = prop.GetValue(obj, null);
                 var defaultValue = GetDefault(prop.PropertyType);
-                if (value == null || (name == "id" && value.Equals(defaultValue))) continue;
+                if (value == null || (name == "id" && value.Equals(defaultValue))) continue; //ignore id property if it is null or default
                 form.Add(new StringContent(value.ToString()), $"{resource}[{name}]");
             }
             var response = await client.PostAsync(relativeUrl, form);

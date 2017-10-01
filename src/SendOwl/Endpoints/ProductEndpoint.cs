@@ -52,6 +52,17 @@ namespace SendOwl.Endpoints
         }
 
         /// <summary>
+        /// Update product
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns></returns>
+        public async Task<SendOwlProduct> UpdateAsync(SendOwlProduct product)
+        {
+            await httpClient.PutAsync($"{Path}/{product.Id}", new SendOwlProductListItem { Product = product });
+            return await GetAsync(product.Id);
+        }
+
+        /// <summary>
         /// Delete product
         /// </summary>
         /// <param name="productId"></param>

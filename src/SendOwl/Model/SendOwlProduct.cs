@@ -6,11 +6,12 @@ namespace SendOwl.Model
 {
     public class SendOwlProduct
     {
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public long Id { get; set; }
         [JsonConverter(typeof(StringEnumConverter))]
         public ProductType Product_type { get; set; }
         public string Name { get; set; }
-        public bool Pdf_stamping { get; set; }
+        public bool? Pdf_stamping { get; set; }
         public object Sales_limit { get; set; }
         public string Self_hosted_url { get; set; }
         public string License_type { get; set; }
@@ -23,13 +24,16 @@ namespace SendOwl.Model
         public bool Affiliate_sellable { get; set; }
         public decimal? Commission_rate { get; set; }
         public object Weight { get; set; }
-        public DateTime Created_at { get; set; }
-        public DateTime Updated_at { get; set; }
+        public DateTime Created_at { get; private set; }
+        public DateTime Updated_at { get; private set; }
         public string Price { get; set; }
-        public string Currency_code { get; set; }
+        public string Currency_code { get; private set; }
         public string Product_image_url { get; set; }
-        public Attachment Attachment { get; set; }
-        public string Instant_buy_url { get; set; }
-        public string Add_to_cart_url { get; set; }
+        [JsonIgnore]
+        public Attachment Attachment { get; private set; }
+        [JsonProperty(nameof(Attachment))]
+        public Attachment AttachmentInternal { set { Attachment = value; } }
+        public string Instant_buy_url { get; private set; }
+        public string Add_to_cart_url { get; private set; }
     }
 }

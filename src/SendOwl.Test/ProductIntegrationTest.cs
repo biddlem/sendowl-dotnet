@@ -60,6 +60,28 @@ namespace SendOwl.Test
         }
 
         [Fact]
+        public async Task UpdateAsync()
+        {
+            var product = new SendOwlProduct
+            {
+                Name = TestProductName + "[Update]",
+                Price = "10.00"
+            };
+
+            var created = await endpoint.CreateAsync(product);
+            CreatedProductIds.Add(created.Id);
+            created.Price.ShouldBe(product.Price);
+            created.Name.ShouldBe(product.Name);
+
+            created.Price = "5.00";
+            created.Product_type = ProductType.Digital;
+
+            var updatedProduct = await endpoint.UpdateAsync(created);
+            updatedProduct.Price.ShouldBe(created.Price);
+            updatedProduct.Product_type.ShouldBe(created.Product_type);
+        }
+
+        [Fact]
         public async Task DeleteAsync()
         {
             var product = new SendOwlProduct

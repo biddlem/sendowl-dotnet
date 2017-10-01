@@ -1,23 +1,28 @@
-﻿using SendOwl.Model;
+﻿using SendOwl.Endpoints;
+using SendOwl.Model;
 using Shouldly;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace SendOwl.Test
 {
-    public class ProductIntegrationTest : IDisposable
+    public class ProductIntegrationTest : IClassFixture<APIClientFixture>
     {
         private const string TestProductName = "my-test-product";
-        private static List<long> CreatedProductIds = new List<long>();
-        SendOwlAPIClient sendOwl = new SendOwlAPIClient("key", "secret");
+        private readonly List<long> CreatedProductIds;
+        private readonly ProductEndpoint endpoint;
+
+        public ProductIntegrationTest(APIClientFixture fixture)
+        {
+            endpoint = fixture.SendOwlAPIClient.Product;
+            CreatedProductIds = fixture.CreatedProductIds;
+        }
 
         [Fact]
         public async Task GetAllAsync()
         {
-            var products = await sendOwl.Product.GetAllAsync();
+            var products = await endpoint.GetAllAsync();
             products.ShouldNotBeEmpty();
             var count = products.Count;
         }
@@ -25,14 +30,14 @@ namespace SendOwl.Test
         [Fact]
         public async Task GetAsync()
         {
-            var product = await sendOwl.Product.GetAsync(123456);
+            var product = await endpoint.GetAsync(123456);
             product.ShouldNotBeNull();
         }
 
         [Fact]
         public async Task SearchAsync()
         {
-            var products = await sendOwl.Product.SearchAsync("coinbase");
+            var products = await endpoint.SearchAsync("coinbase");
             products.ShouldNotBeEmpty();
         }
 
@@ -46,7 +51,7 @@ namespace SendOwl.Test
                 Product_type = ProductType.Software
             };
 
-            var result = await sendOwl.Product.CreateAsync(product);
+            var result = await endpoint.CreateAsync(product);
             CreatedProductIds.Add(result.Id);
             result.Name.ShouldBe(product.Name);
             result.Price.ShouldBe(product.Price);
@@ -62,26 +67,11 @@ namespace SendOwl.Test
                 Name = TestProductName + "[Delete]"
             };
 
-            var result = await sendOwl.Product.CreateAsync(product);
+            var result = await endpoint.CreateAsync(product);
             CreatedProductIds.Add(result.Id);
             result.ShouldNotBeNull();
-            await sendOwl.Product.DeleteAsync(result.Id);
-        }
-
-        public void Dispose()
-        {
-            if(sendOwl != null)
-            {
-                try
-                {
-                    Task.WhenAll(CreatedProductIds.Select(x => sendOwl.Product.DeleteAsync(x)))
-                        .GetAwaiter().GetResult();
-                }
-                catch
-                { 
-                    //ignored
-                }
-            }
+            await Task.Delay(5000); //API returns 500 if deleting too fast after creation
+            await endpoint.DeleteAsync(result.Id);
         }
     }
 }

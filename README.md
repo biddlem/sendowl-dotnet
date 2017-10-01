@@ -44,7 +44,7 @@ Create product
 
 Get bundle by id
 ```c#
- var bundle = await sendOwl.Product.GetAsync(256);
+ var bundle = await sendOwl.Bundle.GetAsync(256);
 ```
 
 List all bundles

@@ -1,5 +1,5 @@
-# sendowl-dotnet
-sendowl .net api client
+# SendOwl-dotnet
+SendOwl API client
 
 
 
@@ -8,14 +8,14 @@ sendowl .net api client
 Initialize the client with your key and secret
 
 ```c#
-var sendOwl = new SendOwlAPIClient("mykey", "mysecret");
+SendOwlAPIClient sendOwl = new SendOwlAPIClient("mykey", "mysecret");
 ```
 
 ### Product
 
 Get product by id
 ```c#
- var product = await sendOwl.Product.GetAsync(123456);
+var product = await sendOwl.Product.GetAsync(123456);
 ```
 
 Search for product by name
@@ -25,19 +25,31 @@ var products = await sendOwl.Product.SearchAsync("product name");
 
 List all products
 ```c#
- var products = await sendOwl.Product.GetAllAsync();
+var products = await sendOwl.Product.GetAllAsync();
 ```
 
 Create product
 ```c#
- var product = await sendOwl.Product.CreateAsync(
-   new SendOwlProduct
-   {
-     Name = "my product",
-     Price = "19.99",
-     Product_type = ProductType.Software
-   }
- );
+var product = await sendOwl.Product.CreateAsync(
+  new SendOwlProduct
+  {
+    Name = "my product",
+    Price = "19.99",
+    Product_type = ProductType.Software
+  });
+```
+
+Update product
+```c#
+var product = await sendOwl.Product.GetAsync(123456);
+product.Price = "89.95";
+product.Name = "new name";
+await sendOwl.Product.UpdateAsync(product);
+```
+
+Delete product
+```c#
+await sendOwl.Product.DeleteAsync(256);
 ```
 
 ### Bundle
@@ -54,20 +66,28 @@ List all bundles
 
 Create bundle
 ```c#
- var bundle = await sendOwl.Bundle.CreateAsync(
-   new SendOwlBundle
-   {
-     Name = "my new bundle",
-     Price = "99.5",
-     Components = new Components
-     {
-       Product_ids = new List<long>{ 256, 1024, 1337 }
-     }
-   }
- )
+var bundle = await sendOwl.Bundle.CreateAsync(
+  new SendOwlBundle
+  {
+    Name = "my new bundle",
+    Price = "99.5",
+    Components = new Components
+    {
+      Product_ids = new List<long>{ 256, 1024, 1337 }
+    }
+  });
+```
+
+Update Bundle
+```c#
+var bundle = await sendOwl.Bundle.GetAsync(256)
+bundle.Price = "22.9";
+bundle.Component.Product_Ids.Remove(1024);
+await sendOwl.Bundle.UpdateAsync(bundle);
 ```
 
 Delete bundle
+
 ```c#
  await sendOwl.Bundle.DeleteAsync(256);
 ```

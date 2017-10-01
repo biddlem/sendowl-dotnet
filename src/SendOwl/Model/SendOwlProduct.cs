@@ -1,11 +1,14 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System;
 
 namespace SendOwl.Model
 {
     public class SendOwlProduct
     {
-        public int Id { get; set; }
-        public string Product_type { get; set; }
+        public long Id { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public ProductType Product_type { get; set; }
         public string Name { get; set; }
         public bool Pdf_stamping { get; set; }
         public object Sales_limit { get; set; }

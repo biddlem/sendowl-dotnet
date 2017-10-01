@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Sendowl\SendOwl.csproj" />
+    <ProjectReference Include="..\SendOwl\SendOwl.csproj" />
   </ItemGroup>
 
   <ItemGroup>

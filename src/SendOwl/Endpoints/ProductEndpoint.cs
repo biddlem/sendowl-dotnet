@@ -40,5 +40,25 @@ namespace SendOwl.Endpoints
         {
             return await PaginationHelper.GetAllAsync<SendOwlProduct, SendOwlProductListItem>(httpClient, Path, p => p.Product);
         }
+
+        /// <summary>
+        /// Create product
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns></returns>
+        public async Task<SendOwlProduct> CreateAsync(SendOwlProduct product)
+        {
+            return (await httpClient.PostMultipartAsync<SendOwlProductListItem, SendOwlProduct>(Path, product, "product")).Product;
+        }
+
+        /// <summary>
+        /// Delete product
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <returns></returns>
+        public async Task DeleteAsync(long productId)
+        {
+            await httpClient.DeleteAsync($"{Path}/{productId}");
+        }
     }
 }

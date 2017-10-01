@@ -9,11 +9,13 @@ namespace SendOwl.Test
     {
         public SendOwlAPIClient SendOwlAPIClient { get;}
         public List<long> CreatedProductIds { get; }
+        public List<int> CreatedBundleIds { get; }
 
         public APIClientFixture()
         {
             SendOwlAPIClient = new SendOwlAPIClient("key", "secret");
             CreatedProductIds = new List<long>();
+            CreatedBundleIds = new List<int>();
         }
 
         public void Dispose()
@@ -22,8 +24,10 @@ namespace SendOwl.Test
             {
                 try
                 {
-                    Task.WhenAll(CreatedProductIds.Select(x => SendOwlAPIClient.Product.DeleteAsync(x)))
-                        .GetAwaiter().GetResult();
+                    var tasks = new List<Task>();
+                    tasks.AddRange(CreatedProductIds.Select(x => SendOwlAPIClient.Product.DeleteAsync(x)));
+                    tasks.AddRange(CreatedBundleIds.Select(x => SendOwlAPIClient.Bundle.DeleteAsync(x)));
+                    Task.WhenAll(tasks).GetAwaiter().GetResult();
                 }
                 catch
                 {

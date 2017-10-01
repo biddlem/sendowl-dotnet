@@ -7,7 +7,8 @@ namespace SendOwl
     {
         private static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
         {
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            DefaultValueHandling = DefaultValueHandling.Ignore
         };
 
         public static string SerializeObject(object o)

@@ -8,6 +8,7 @@ namespace SendOwl
         private const string BaseUrl = "https://www.SendOwl.com/api/v1/";
         internal readonly IHttpSerializerClient client;
         public ProductEndpoint Product => new ProductEndpoint(client);
+        public BundleEndpoint Bundle => new BundleEndpoint(client);
 
         public SendOwlAPIClient(string apiKey, string apiSecret)
             :this(new HttpSerializerClient(BaseUrl, apiKey, apiSecret))

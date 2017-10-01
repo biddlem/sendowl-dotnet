@@ -6,12 +6,14 @@ using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using SendOwl.Model;
 
 namespace SendOwl
 {
     public interface IHttpSerializerClient : IDisposable
     {
         Task<T> GetAsync<T>(string relativeUrl);
+        Task<T> PostAsync<T>(string relativeUrl, T obj);
         Task DeleteAsync(string relativeUrl);
         Task<TResult> PostMultipartAsync<TResult, YObject>(string relativeUrl, YObject content, string resource);
     }
@@ -19,6 +21,7 @@ namespace SendOwl
     public class HttpSerializerClient : IHttpSerializerClient
     {
         private readonly HttpClient client;
+        private const string JsonContentType = "application/json";
 
         public HttpSerializerClient(string baseUrl, string apiKey, string apiSecret)
         {
@@ -30,13 +33,21 @@ namespace SendOwl
             var payload = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{apiKey}:{apiSecret}"));
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", payload);
             client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(JsonContentType));
             client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
         }
 
         public async Task<T> GetAsync<T>(string relativeUrl)
         {
             return LowercaseJsonSerializer.DeserializeObject<T>(await client.GetStringAsync(relativeUrl));
+        }
+
+        public async Task<T> PostAsync<T>(string relativeUrl, T obj)
+        {
+            var json = LowercaseJsonSerializer.SerializeObject(obj);
+            var response = await client.PostAsync(relativeUrl, new StringContent(json, Encoding.UTF8, JsonContentType));
+            response.EnsureSuccessStatusCode();
+            return LowercaseJsonSerializer.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
         }
 
         public async Task DeleteAsync(string relativeUrl)

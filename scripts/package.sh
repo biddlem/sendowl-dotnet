@@ -1,2 +1,4 @@
 #!/usr/bin/env bash
-dotnet pack src/Sendowl -c Release -o ../../nuget
+#exit if any command fails
+set -e
+dotnet pack src/Sendowl -c Release -o ../../nuget --version-suffix=$revision 

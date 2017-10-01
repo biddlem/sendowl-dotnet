@@ -51,6 +51,17 @@ namespace SendOwl.Endpoints
         }
 
         /// <summary>
+        /// Update bundle
+        /// </summary>
+        /// <param name="bundle"></param>
+        /// <returns></returns>
+        public async Task<SendOwlBundle> UpdateAsync(SendOwlBundle bundle)
+        {
+            await httpClient.PutAsync($"{Path}/{bundle.Id}", new SendOwlBundleListItem { Package = bundle });
+            return await GetAsync(bundle.Id);
+        }
+
+        /// <summary>
         /// Delete bundle
         /// </summary>
         /// <param name="bundleId"></param>

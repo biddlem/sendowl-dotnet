@@ -64,6 +64,35 @@ namespace SendOwl.Test
         }
 
         [Fact]
+        public async Task UpdateAsync()
+        {
+            var bundle = new SendOwlBundle
+            {
+                Name = TestBundleName + "[Update]",
+                Price = "140.00",
+                Components = new Components
+                {
+                    Product_ids = new List<long>()
+                    {
+                        431741
+                    }
+                }
+            };
+
+            var created = await endpoint.CreateAsync(bundle);
+            CreatedBundleIds.Add(created.Id);
+            created.Price.ShouldBe(bundle.Price);
+            created.Name.ShouldBe(bundle.Name);
+
+            created.Price = "5.00";
+            created.Components.Product_ids.Add(621621);
+
+            var updated = await endpoint.UpdateAsync(created);
+            updated.Price.ShouldBe(created.Price);
+            updated.Components.Product_ids.ShouldBe(created.Components.Product_ids);
+        }
+
+        [Fact]
         public async Task DeleteAsync()
         {
             var bundle = new SendOwlBundle

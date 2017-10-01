@@ -15,8 +15,8 @@ namespace SendOwl.Model
         public DateTime Updated_at { get; private set; }
         public string Price { get; set; }
         public string Currency_code { get; set; }
-        public string Instant_buy_url { get; set; }
+        public string Instant_buy_url { get; private set; }
         public bool Price_is_minimum { get; set; }
-        public string Add_to_cart_url { get; set; }
+        public string Add_to_cart_url { get; private set; }
     }
 }

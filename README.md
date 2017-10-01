@@ -52,7 +52,23 @@ List all bundles
  var bundles = await sendOwl.Bundle.GetAllAsync();
 ```
 
+Create bundle
+```c#
+ var bundle = await sendOwl.Bundle.CreateAsync(
+   new SendOwlBundle
+   {
+     Name = "my new bundle",
+     Price = "99.5",
+     Components = new Components
+     {
+       Product_ids = new List<long>{ 256, 1024, 1337 }
+     }
+   }
+ )
+```
+
 Delete bundle
 ```c#
  await sendOwl.Bundle.DeleteAsync(256);
 ```
+

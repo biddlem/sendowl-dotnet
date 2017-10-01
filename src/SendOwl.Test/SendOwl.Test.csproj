@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>    
-    <TargetFramework>netcoreapp1.1</TargetFramework>    
-    <AssemblyName>SendOwl.Test</AssemblyName>    
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp1.1;netcoreapp2.0</TargetFrameworks>
+    <AssemblyName>SendOwl.Test</AssemblyName>
     <RootNamespace>SendOwl.Test</RootNamespace>
   </PropertyGroup>
 

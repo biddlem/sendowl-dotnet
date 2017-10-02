@@ -13,7 +13,9 @@ namespace SendOwl.Test
 
         public APIClientFixture()
         {
-            SendOwlAPIClient = new SendOwlAPIClient("key", "secret");
+            var key = System.Environment.GetEnvironmentVariable("sendowl_key");
+            var secret = System.Environment.GetEnvironmentVariable("sendowl_secret");
+            SendOwlAPIClient = new SendOwlAPIClient(key, secret);
             CreatedProductIds = new List<long>();
             CreatedBundleIds = new List<int>();
         }

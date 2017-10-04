@@ -16,4 +16,4 @@ git:
   depth: 3
 
 script:
-  - scripts/travis.sh --quiet verify
+  - build/travis.sh --quiet verify

@@ -7,6 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SendOwl", "src\SendOwl\Send
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SendOwl.Test", "src\SendOwl.Test\SendOwl.Test.csproj", "{423E867F-E69C-4285-8A29-00D8DD1EB5A1}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{283CA4DE-3BC5-43AF-922B-F8A2CCA92D87}"
+	ProjectSection(SolutionItems) = preProject
+		scripts\build.sh = scripts\build.sh
+		scripts\package.sh = scripts\package.sh
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

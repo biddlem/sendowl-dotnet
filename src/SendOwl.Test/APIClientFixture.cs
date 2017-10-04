@@ -17,7 +17,7 @@ namespace SendOwl.Test
         {
             var key = GetVariable("sendowl_key");
             var secret = GetVariable("sendowl_secret");
-            ExistingProductIds = GetVariable("sendowl_productids").Split(',', StringSplitOptions.RemoveEmptyEntries).Select(x => long.Parse(x)).ToList();
+            ExistingProductIds = GetVariable("sendowl_productids").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => long.Parse(x)).ToList();
             ExistingBundleId = int.Parse(GetVariable("sendowl_bundleid"));
             SendOwlAPIClient = new SendOwlAPIClient(key, secret);
             CreatedProductIds = new List<long>();
@@ -45,7 +45,11 @@ namespace SendOwl.Test
         public string GetVariable(string name)
         {
             var variable = Environment.GetEnvironmentVariable(name);
-            return string.IsNullOrWhiteSpace(variable) ? Environment.GetEnvironmentVariable(name, EnvironmentVariableTarget.User) : variable;
+
+#if NETSTANDARD2_0
+            if(string.IsNullOrWhiteSpace(variable)) variable = Environment.GetEnvironmentVariable(name, EnvironmentVariableTarget.User)
+#endif
+            return variable;
         }
     }
 }

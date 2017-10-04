@@ -18,16 +18,11 @@ git:
 script:
   - build/travis.sh --quiet verify
 
-before_deploy:
-  on:
-    tags: true
-      - export RELEASE_NUGET_FILE=$(ls artifacts/*.nupkg)
-      - echo "deploying $RELEASE_NUGET_FILE to GitHub releases"
-
 deploy:
   provider: releases
   api_key: "${GITHUB_API_KEY}"
-  file: "${RELEASE_NUGET_FILE}"
+  file_glob: true
+  file: artifacts/*
   skip_cleanup: true
   on:
     tags: true

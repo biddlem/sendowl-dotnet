@@ -7,14 +7,16 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;netstandard1.3</TargetFrameworks>
     <PackageId>SendOwl</PackageId>
-    <PackageVersion>0.0.1</PackageVersion>
+    <VersionPrefix>0.0.1</VersionPrefix>
     <Authors>Andreas Caravella</Authors>
     <Description>SendOwl API client</Description>	
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <RepositoryUrl>https://github.com/challengerdeep/sendowl-dotnet</RepositoryUrl>
     <PackageTags>SendOwl SendOwl-API</PackageTags>
     <OutputTypeEx>library</OutputTypeEx>
     <StartupObject />
     <AssemblyName>SendOwl</AssemblyName>
+    <AssemblyTitle>SendOwl</AssemblyTitle>
     <RootNamespace>SendOwl</RootNamespace>
   </PropertyGroup>
 

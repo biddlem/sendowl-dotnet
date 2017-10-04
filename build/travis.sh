@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
-declare -r JOBID=${TRAVIS_JOB_ID:=1}
-declare -r REVISION=$(printf "%04d" $JOBID)
+declare -r BUILD_NUMBER=${TRAVIS_BUILD_NUMBER:=1}
+declare -r REVISION=$(printf "%04d" $BUILD_NUMBER)
 declare -r OUTPUT=../../artifacts
 
 echo "building revision $REVISION"

@@ -11,6 +11,7 @@
     <Authors>Andreas Caravella</Authors>
     <Description>SendOwl API client</Description>	
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseUrl>https://github.com/challengerdeep/sendowl-dotnet/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/challengerdeep/sendowl-dotnet</RepositoryUrl>
     <PackageTags>SendOwl SendOwl-API</PackageTags>
     <OutputTypeEx>library</OutputTypeEx>

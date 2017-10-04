@@ -11,4 +11,4 @@ dotnet restore src/SendOwl.Test
 
 dotnet test src/SendOwl.Test
 
-dotnet pack -c Release src/Sendowl -o $OUTPUT --version-suffix=ci-$REVISION
+dotnet pack -c Release src/SendOwl -o $OUTPUT --version-suffix=ci-$REVISION

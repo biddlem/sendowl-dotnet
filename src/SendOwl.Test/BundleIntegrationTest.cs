@@ -2,6 +2,7 @@
 using SendOwl.Model;
 using Shouldly;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -9,6 +10,8 @@ namespace SendOwl.Test
 {
     public class BundleIntegrationTest : IClassFixture<APIClientFixture>
     {
+        private readonly int bundleId;
+        private readonly List<long> productIds;
         private const string TestBundleName = "my-test-bundle";
         private readonly List<int> CreatedBundleIds;
         private readonly BundleEndpoint endpoint;
@@ -17,6 +20,8 @@ namespace SendOwl.Test
         {
             endpoint = fixture.SendOwlAPIClient.Bundle;
             CreatedBundleIds = fixture.CreatedBundleIds;
+            bundleId = fixture.ExistingBundleId;
+            productIds = fixture.ExistingProductIds;
         }
 
         [Fact]
@@ -29,7 +34,7 @@ namespace SendOwl.Test
         [Fact]
         public async Task GetAsync()
         {
-            var bundle = await endpoint.GetAsync(51579);
+            var bundle = await endpoint.GetAsync(bundleId);
             bundle.ShouldNotBeNull();
         }
 
@@ -49,10 +54,7 @@ namespace SendOwl.Test
                 Price = "99.99",
                 Components = new Components
                 {
-                    Product_ids = new List<long>()
-                    {
-                        621621
-                    }
+                    Product_ids = productIds
                 }
             };
             var result = await endpoint.CreateAsync(bundle);
@@ -72,9 +74,9 @@ namespace SendOwl.Test
                 Price = "140.00",
                 Components = new Components
                 {
-                    Product_ids = new List<long>()
+                    Product_ids = new List<long>
                     {
-                        431741
+                        productIds.First()
                     }
                 }
             };
@@ -85,7 +87,7 @@ namespace SendOwl.Test
             created.Name.ShouldBe(bundle.Name);
 
             created.Price = "5.00";
-            created.Components.Product_ids.Add(621621);
+            created.Components.Product_ids.Add(productIds.Last());
 
             var updated = await endpoint.UpdateAsync(created);
             updated.Price.ShouldBe(created.Price);
@@ -102,7 +104,7 @@ namespace SendOwl.Test
                 {
                     Product_ids = new List<long>()
                     {
-                        621621
+                        productIds.First()
                     }
                 }
             };

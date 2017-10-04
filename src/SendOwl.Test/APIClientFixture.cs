@@ -7,14 +7,18 @@ namespace SendOwl.Test
 {
     public class APIClientFixture : IDisposable
     {
+        public List<long> ExistingProductIds { get; }
+        public int ExistingBundleId { get; }
         public SendOwlAPIClient SendOwlAPIClient { get;}
         public List<long> CreatedProductIds { get; }
         public List<int> CreatedBundleIds { get; }
 
         public APIClientFixture()
         {
-            var key = System.Environment.GetEnvironmentVariable("sendowl_key");
-            var secret = System.Environment.GetEnvironmentVariable("sendowl_secret");
+            var key = GetVariable("sendowl_key");
+            var secret = GetVariable("sendowl_secret");
+            ExistingProductIds = GetVariable("sendowl_productids").Split(',', StringSplitOptions.RemoveEmptyEntries).Select(x => long.Parse(x)).ToList();
+            ExistingBundleId = int.Parse(GetVariable("sendowl_bundleid"));
             SendOwlAPIClient = new SendOwlAPIClient(key, secret);
             CreatedProductIds = new List<long>();
             CreatedBundleIds = new List<int>();
@@ -36,6 +40,12 @@ namespace SendOwl.Test
                     //ignored
                 }
             }
+        }
+
+        public string GetVariable(string name)
+        {
+            var variable = Environment.GetEnvironmentVariable(name);
+            return string.IsNullOrWhiteSpace(variable) ? Environment.GetEnvironmentVariable(name, EnvironmentVariableTarget.User) : variable;
         }
     }
 }

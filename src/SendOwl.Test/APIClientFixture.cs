@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -7,21 +9,30 @@ namespace SendOwl.Test
 {
     public class APIClientFixture : IDisposable
     {
+        private static TestSettings Settings { get; } = new TestSettings();
         public List<long> ExistingProductIds { get; }
         public int ExistingBundleId { get; }
         public SendOwlAPIClient SendOwlAPIClient { get;}
-        public List<long> CreatedProductIds { get; }
-        public List<int> CreatedBundleIds { get; }
+        public List<long> CreatedProductIds { get; } = new List<long>();
+        public List<int> CreatedBundleIds { get; } = new List<int>();
+
+        static APIClientFixture()
+        {
+            var configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("testsettings.json", optional: true)
+            .AddEnvironmentVariables()
+            .Build();
+            configuration.Bind(Settings);
+        }
 
         public APIClientFixture()
         {
-            var key = GetVariable("sendowl_key");
-            var secret = GetVariable("sendowl_secret");
-            ExistingProductIds = GetVariable("sendowl_productids").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => long.Parse(x)).ToList();
-            ExistingBundleId = int.Parse(GetVariable("sendowl_bundleid"));
-            SendOwlAPIClient = new SendOwlAPIClient(key, secret);
-            CreatedProductIds = new List<long>();
-            CreatedBundleIds = new List<int>();
+            ExistingProductIds = Settings.SendOwl_ProductIds
+                .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(x => long.Parse(x)).ToList();
+            ExistingBundleId = Settings.SendOwl_BundleId;
+            SendOwlAPIClient = new SendOwlAPIClient(Settings.SendOwl_Key, Settings.SendOwl_Secret);
         }
 
         public void Dispose()
@@ -40,16 +51,6 @@ namespace SendOwl.Test
                     //ignored
                 }
             }
-        }
-
-        public string GetVariable(string name)
-        {
-            var variable = Environment.GetEnvironmentVariable(name);
-
-#if NETSTANDARD2_0
-            if(string.IsNullOrWhiteSpace(variable)) variable = Environment.GetEnvironmentVariable(name, EnvironmentVariableTarget.User)
-#endif
-            return variable;
         }
     }
 }

@@ -289,3 +289,4 @@ __pycache__/
 
 #package output
 nuget/*
+src/SendOwl.Test/testsettings.json

@@ -1,6 +1,7 @@
 ﻿using SendOwl.Endpoints;
 using SendOwl.Model;
 using Shouldly;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,23 +11,22 @@ namespace SendOwl.Test
 {
     public class BundleIntegrationTest : IClassFixture<APIClientFixture>
     {
-        private readonly int bundleId;
-        private readonly List<long> productIds;
         private const string TestBundleName = "my-test-bundle";
         private readonly List<int> CreatedBundleIds;
+        private readonly Lazy<List<long>> ExistingProductIds;
         private readonly BundleEndpoint endpoint;
 
         public BundleIntegrationTest(APIClientFixture fixture)
         {
             endpoint = fixture.SendOwlAPIClient.Bundle;
             CreatedBundleIds = fixture.CreatedBundleIds;
-            bundleId = fixture.ExistingBundleId;
-            productIds = fixture.ExistingProductIds;
+            ExistingProductIds = fixture.ExistingProductIds;
         }
 
         [Fact]
         public async Task GetAllAsync()
         {
+            if(!CreatedBundleIds.Any()) await CreateBundle();
             var bundles = await endpoint.GetAllAsync();
             bundles.ShouldNotBeEmpty();
         }
@@ -34,13 +34,16 @@ namespace SendOwl.Test
         [Fact]
         public async Task GetAsync()
         {
-            var bundle = await endpoint.GetAsync(bundleId);
+            var existing = await CreateBundle();
+            var bundle = await endpoint.GetAsync(existing.Id);
             bundle.ShouldNotBeNull();
+            bundle.Id.ShouldBe(existing.Id);
         }
 
         [Fact]
         public async Task SearchAsync()
         {
+            if (!CreatedBundleIds.Any()) await CreateBundle();
             var bundles = await endpoint.SearchAsync("test");
             bundles.ShouldNotBeEmpty();
         }
@@ -54,7 +57,7 @@ namespace SendOwl.Test
                 Price = "99.99",
                 Components = new Components
                 {
-                    Product_ids = productIds
+                    Product_ids = ExistingProductIds.Value
                 }
             };
             var result = await endpoint.CreateAsync(bundle);
@@ -62,7 +65,8 @@ namespace SendOwl.Test
             result.Id.ShouldBeGreaterThan(1);
             result.Name.ShouldBe(bundle.Name);
             result.Price.ShouldBe(bundle.Price);
-            result.Components.Product_ids.ShouldBe(bundle.Components.Product_ids);
+            result.Components.Product_ids.OrderBy(p => p).ToList()
+                .ShouldBe(bundle.Components.Product_ids.OrderBy(p => p).ToList());
         }
 
         [Fact]
@@ -76,7 +80,7 @@ namespace SendOwl.Test
                 {
                     Product_ids = new List<long>
                     {
-                        productIds.First()
+                        ExistingProductIds.Value.First()
                     }
                 }
             };
@@ -87,33 +91,41 @@ namespace SendOwl.Test
             created.Name.ShouldBe(bundle.Name);
 
             created.Price = "5.00";
-            created.Components.Product_ids.Add(productIds.Last());
+            created.Components.Product_ids.Add(ExistingProductIds.Value.Last());
 
             var updated = await endpoint.UpdateAsync(created);
             updated.Price.ShouldBe(created.Price);
-            updated.Components.Product_ids.ShouldBe(created.Components.Product_ids);
+            updated.Components.Product_ids.OrderBy(p => p).ToList()
+                .ShouldBe(created.Components.Product_ids.OrderBy(p => p).ToList());
+
         }
 
         [Fact]
         public async Task DeleteAsync()
         {
-            var bundle = new SendOwlBundle
-            {
-                Name = TestBundleName + "[Delete]",
-                Components = new Components
-                {
-                    Product_ids = new List<long>()
-                    {
-                        productIds.First()
-                    }
-                }
-            };
+            var bundle = await CreateBundle();
 
             var result = await endpoint.CreateAsync(bundle);
             CreatedBundleIds.Add(result.Id);
             result.ShouldNotBeNull();
             await Task.Delay(5000); //API returns 500 if deleting too fast after creation
             await endpoint.DeleteAsync(result.Id);
+        }
+
+        private async Task<SendOwlBundle> CreateBundle()
+        {
+            var bundle = await endpoint.CreateAsync(new SendOwlBundle
+            {
+                Name = TestBundleName,
+                Price = "99.99",
+                Components = new Components
+                {
+                    Product_ids = ExistingProductIds.Value
+                }
+            });
+
+            CreatedBundleIds.Add(bundle.Id);
+            return bundle;
         }
     }
 }

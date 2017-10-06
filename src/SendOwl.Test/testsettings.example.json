@@ -1,7 +1,5 @@
 ﻿//rename this file to testsettings.json
 {
   "sendowl_key": "mykey",
-  "sendowl_secret": "mysecret",
-  "sendowl_productids": "1234,56789",
-  "sendowl_bundleid": "1234"
+  "sendowl_secret": "mysecret"
 }

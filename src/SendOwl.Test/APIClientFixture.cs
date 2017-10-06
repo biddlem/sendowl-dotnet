@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using SendOwl.Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,11 +11,10 @@ namespace SendOwl.Test
     public class APIClientFixture : IDisposable
     {
         private static TestSettings Settings { get; } = new TestSettings();
-        public List<long> ExistingProductIds { get; }
-        public int ExistingBundleId { get; }
-        public SendOwlAPIClient SendOwlAPIClient { get;}
-        public List<long> CreatedProductIds { get; } = new List<long>();
-        public List<int> CreatedBundleIds { get; } = new List<int>();
+        public Lazy<List<long>> ExistingProductIds { get; }
+        public SendOwlAPIClient SendOwlAPIClient { get; }
+        public List<long> CreatedProductIds { get; } = new List<long>(8);
+        public List<int> CreatedBundleIds { get; } = new List<int>(8);
 
         static APIClientFixture()
         {
@@ -28,11 +28,23 @@ namespace SendOwl.Test
 
         public APIClientFixture()
         {
-            ExistingProductIds = Settings.SendOwl_ProductIds
-                .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(x => long.Parse(x)).ToList();
-            ExistingBundleId = Settings.SendOwl_BundleId;
             SendOwlAPIClient = new SendOwlAPIClient(Settings.SendOwl_Key, Settings.SendOwl_Secret);
+
+            ExistingProductIds = new Lazy<List<long>>(() =>
+            {
+                var tasks = new List<Task<long>>();
+                for (int i = 0; i < 2; i++)
+                {
+                    var task = SendOwlAPIClient.Product.CreateAsync(new SendOwlProduct
+                    {
+                        Name = $"Bundle product {i} [test]",
+                        Price = $"1{i}.99",
+                        Product_type = ProductType.Digital
+                    }).ContinueWith(p => { CreatedProductIds.Add(p.Result.Id); return p.Result.Id; });
+                    tasks.Add(task);
+                }
+                return Task.WhenAll(tasks).GetAwaiter().GetResult().ToList();
+            });
         }
 
         public void Dispose()

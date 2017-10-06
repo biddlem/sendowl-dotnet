@@ -1,6 +1,7 @@
 ﻿using SendOwl.Endpoints;
 using SendOwl.Model;
 using Shouldly;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace SendOwl.Test
 {
     public class ProductIntegrationTest : IClassFixture<APIClientFixture>
     {
-        private readonly List<long> productIds;
+        private readonly Lazy<List<long>> ExistingProductIds;
         private const string TestProductName = "my-test-product";
         private readonly List<long> CreatedProductIds;
         private readonly ProductEndpoint endpoint;
@@ -20,7 +21,7 @@ namespace SendOwl.Test
         {
             endpoint = fixture.SendOwlAPIClient.Product;
             CreatedProductIds = fixture.CreatedProductIds;
-            productIds = fixture.ExistingProductIds;
+            ExistingProductIds = fixture.ExistingProductIds;
         }
 
         [Fact]
@@ -33,7 +34,7 @@ namespace SendOwl.Test
         [Fact]
         public async Task GetAsync()
         {
-            var product = await endpoint.GetAsync(productIds.First());
+            var product = await endpoint.GetAsync(ExistingProductIds.Value.First());
             product.ShouldNotBeNull();
         }
 

@@ -17,7 +17,7 @@ namespace SendOwl
         Task PutAsync<T>(string relativeUrl, T obj);
         Task DeleteAsync(string relativeUrl);
         Task<TResult> PostMultipartAsync<TResult, YObject>(string relativeUrl, YObject obj, string resource);
-        Task<TResult> PostMultipartAsync<TResult, YObject>(string relativeUrl, YObject obj, string resource, Stream stream, string fileName, string attachmentFieldName = "attachement");
+        Task<TResult> PostMultipartAsync<TResult, YObject>(string relativeUrl, YObject obj, string resource, Stream stream, string fileName);
     }
 
     public class HttpSerializerClient : IHttpSerializerClient
@@ -69,7 +69,7 @@ namespace SendOwl
             return await PostMultipartAsync<TResult, YObject>(relativeUrl, obj, resource, null, null);
         }
 
-        public async Task<TResult> PostMultipartAsync<TResult, YObject>(string relativeUrl, YObject obj, string resource, Stream stream, string fileName, string attachmentFieldName = "attachment")
+        public async Task<TResult> PostMultipartAsync<TResult, YObject>(string relativeUrl, YObject obj, string resource, Stream stream, string fileName)
         {
             var form = new MultipartFormDataContent();
             foreach (var prop in typeof(YObject).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
@@ -84,7 +84,9 @@ namespace SendOwl
 
             if(stream != null)
             {
-                form.Add(new StreamContent(stream), $"{resource}[{attachmentFieldName}]", fileName);
+                var content = new StreamContent(stream);
+                content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/octet-stream");
+                form.Add(content, $"{resource}[attachment]", fileName);
             }
             var response = await client.PostAsync(relativeUrl, form);
             response.EnsureSuccessStatusCode();

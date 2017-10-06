@@ -62,7 +62,7 @@ namespace SendOwl.Test
             result.Id.ShouldBeGreaterThan(1);
         }
 
-        [Fact(Skip = "not working because SendOwl bug - (Cloudflare - are you human?) response)")]
+        [Fact]
         public async Task CreateAsync_With_File_Upload()
         {
             var product = new SendOwlProduct

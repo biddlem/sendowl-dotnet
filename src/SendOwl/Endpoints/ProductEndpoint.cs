@@ -49,7 +49,7 @@ namespace SendOwl.Endpoints
         /// <returns></returns>
         public async Task<SendOwlProduct> CreateAsync(SendOwlProduct product)
         {
-            return (await httpClient.PostMultipartAsync<SendOwlProductListItem, SendOwlProduct>(Path, product, "product")).Product;
+            return await CreateAsync(product, null, null);
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace SendOwl.Endpoints
         /// <returns></returns>
         public async Task<SendOwlProduct> CreateAsync(SendOwlProduct product, Stream stream, string fileName)
         {
-            return (await httpClient.PostMultipartAsync<SendOwlProductListItem, SendOwlProduct>(Path, product, "product", stream, fileName)).Product;
+            return (await httpClient.PostMultipartAsync<SendOwlProductListItem, SendOwlProduct>("products.json", product, "product", stream, fileName)).Product;
         }
 
         /// <summary>

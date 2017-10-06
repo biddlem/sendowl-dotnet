@@ -32,7 +32,7 @@ namespace SendOwl.Model
         [JsonIgnore]
         public Attachment Attachment { get; private set; }
         [JsonProperty(nameof(Attachment))]
-        public Attachment AttachmentInternal { set { Attachment = value; } }
+        internal Attachment AttachmentInternal { set { Attachment = value; } }
         public string Instant_buy_url { get; private set; }
         public string Add_to_cart_url { get; private set; }
     }

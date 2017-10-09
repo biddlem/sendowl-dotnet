@@ -10,6 +10,12 @@ namespace SendOwl
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
 
+
+        static LowercaseJsonSerializer()
+        {
+            Settings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter(true));
+        }
+
         public static string SerializeObject(object o)
         {
             return JsonConvert.SerializeObject(o, Formatting.None, Settings);

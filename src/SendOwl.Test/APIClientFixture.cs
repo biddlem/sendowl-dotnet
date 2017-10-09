@@ -10,11 +10,13 @@ namespace SendOwl.Test
 {
     public class APIClientFixture : IDisposable
     {
+        private readonly Guid Id = Guid.NewGuid();
         private static TestSettings Settings { get; } = new TestSettings();
         public Lazy<List<long>> ExistingProductIds { get; }
         public SendOwlAPIClient SendOwlAPIClient { get; }
         public List<long> CreatedProductIds { get; } = new List<long>(8);
         public List<int> CreatedBundleIds { get; } = new List<int>(8);
+        public List<int> CreatedSubscriptionIds { get; } = new List<int>(8);
 
         static APIClientFixture()
         {
@@ -56,6 +58,7 @@ namespace SendOwl.Test
                     var tasks = new List<Task>();
                     tasks.AddRange(CreatedProductIds.Select(x => SendOwlAPIClient.Product.DeleteAsync(x)));
                     tasks.AddRange(CreatedBundleIds.Select(x => SendOwlAPIClient.Bundle.DeleteAsync(x)));
+                    tasks.AddRange(CreatedSubscriptionIds.Select(x => SendOwlAPIClient.Subscription.DeleteAsync(x)));
                     Task.WhenAll(tasks).GetAwaiter().GetResult();
                 }
                 catch

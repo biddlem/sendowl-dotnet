@@ -6,7 +6,6 @@ using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using SendOwl.Model;
 
 namespace SendOwl
 {
@@ -48,15 +47,35 @@ namespace SendOwl
         {
             var json = LowercaseJsonSerializer.SerializeObject(obj);
             var response = await client.PostAsync(relativeUrl, new StringContent(json, Encoding.UTF8, JsonContentType));
-            response.EnsureSuccessStatusCode();
-            return LowercaseJsonSerializer.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
+            var content = await response.Content.ReadAsStringAsync();
+
+            try
+            {
+                response.EnsureSuccessStatusCode();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException(content, ex);
+            }
+            
+            
+            return LowercaseJsonSerializer.DeserializeObject<T>(content);
         }
 
         public async Task PutAsync<T>(string relativeUrl, T obj)
         {
             var json = LowercaseJsonSerializer.SerializeObject(obj);
             var response = await client.PutAsync(relativeUrl, new StringContent(json, Encoding.UTF8, JsonContentType));
-            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+
+            try
+            {
+                response.EnsureSuccessStatusCode();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException(content, ex);
+            }
         }
 
         public async Task DeleteAsync(string relativeUrl)
@@ -84,13 +103,21 @@ namespace SendOwl
 
             if(stream != null)
             {
-                var content = new StreamContent(stream);
-                content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/octet-stream");
-                form.Add(content, $"{resource}[attachment]", fileName);
+                var fileContent = new StreamContent(stream);
+                fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse("application/octet-stream");
+                form.Add(fileContent, $"{resource}[attachment]", fileName);
             }
             var response = await client.PostAsync(relativeUrl, form);
-            response.EnsureSuccessStatusCode();
-            return LowercaseJsonSerializer.DeserializeObject<TResult>(await response.Content.ReadAsStringAsync());
+            var content = await response.Content.ReadAsStringAsync();
+            try
+            {
+                response.EnsureSuccessStatusCode();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException(content, ex);
+            }
+            return LowercaseJsonSerializer.DeserializeObject<TResult>(content);
         }
 
         private static object GetDefault(Type type)

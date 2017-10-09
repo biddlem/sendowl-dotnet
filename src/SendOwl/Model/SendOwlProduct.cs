@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using System;
 
 namespace SendOwl.Model
@@ -8,7 +7,7 @@ namespace SendOwl.Model
     {
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public long Id { get; set; }
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public ProductType Product_type { get; set; }
         public string Name { get; set; }
         public bool? Pdf_stamping { get; set; }
@@ -24,16 +23,21 @@ namespace SendOwl.Model
         public bool Affiliate_sellable { get; set; }
         public decimal? Commission_rate { get; set; }
         public object Weight { get; set; }
-        public DateTime Created_at { get; private set; }
-        public DateTime Updated_at { get; private set; }
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public DateTime Created_at { get; set; }
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public DateTime Updated_at { get; set; }
         public string Price { get; set; }
         public string Currency_code { get; private set; }
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string Product_image_url { get; set; }
         [JsonIgnore]
         public Attachment Attachment { get; private set; }
         [JsonProperty(nameof(Attachment))]
         internal Attachment AttachmentInternal { set { Attachment = value; } }
-        public string Instant_buy_url { get; private set; }
-        public string Add_to_cart_url { get; private set; }
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public string Instant_buy_url { get; set; }
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public string Add_to_cart_url { get; set; }
     }
 }

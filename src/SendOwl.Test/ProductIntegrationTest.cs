@@ -27,8 +27,9 @@ namespace SendOwl.Test
         [Fact]
         public async Task GetAllAsync()
         {
+            var existing = ExistingProductIds.Value;
             var products = await endpoint.GetAllAsync();
-            products.ShouldNotBeEmpty();
+            products.Count().ShouldBeGreaterThanOrEqualTo(existing.Count);
         }
 
         [Fact]
@@ -41,8 +42,10 @@ namespace SendOwl.Test
         [Fact]
         public async Task SearchAsync()
         {
+            var existing = ExistingProductIds.Value;
+            await Task.Delay(3000); //takes a few sec for SendOwl to index...
             var products = await endpoint.SearchAsync("test");
-            products.ShouldNotBeEmpty();
+            products.Count().ShouldBeGreaterThanOrEqualTo(existing.Count);
         }
 
         [Fact]
@@ -61,6 +64,10 @@ namespace SendOwl.Test
             result.Price.ShouldBe(product.Price);
             result.Product_type.ShouldBe(product.Product_type);
             result.Id.ShouldBeGreaterThan(1);
+            result.Add_to_cart_url.ShouldNotBeNull();
+            result.Instant_buy_url.ShouldNotBeNull();
+            result.Created_at.Date.ShouldBe(DateTime.UtcNow.Date);
+            result.Updated_at.Date.ShouldBe(DateTime.UtcNow.Date);
         }
 
         [Fact]
@@ -100,7 +107,7 @@ namespace SendOwl.Test
             created.Name.ShouldBe(product.Name);
 
             created.Price = "5.00";
-            created.Product_type = ProductType.Digital;
+            created.Product_type = ProductType.Service;
 
             var updatedProduct = await endpoint.UpdateAsync(created);
             updatedProduct.Price.ShouldBe(created.Price);

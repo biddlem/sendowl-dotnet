@@ -55,7 +55,9 @@ namespace SendOwl.Test
             {
                 Name = TestProductName,
                 Price = "18.99",
-                Product_type = ProductType.software
+                Product_type = ProductType.software,
+                License_type = "MIT",
+                Self_hosted_url = "http://file.com/file"
             };
 
             var result = await endpoint.CreateAsync(product);

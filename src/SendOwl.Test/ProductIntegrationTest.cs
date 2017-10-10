@@ -55,7 +55,7 @@ namespace SendOwl.Test
             {
                 Name = TestProductName,
                 Price = "18.99",
-                Product_type = ProductType.software,
+                Product_type = ProductType.Software,
                 License_type = "MIT",
                 Self_hosted_url = "http://file.com/file"
             };
@@ -79,7 +79,7 @@ namespace SendOwl.Test
             {
                 Name = TestProductName + "[Cat]",
                 Price = "1.99",
-                Product_type = ProductType.digital,
+                Product_type = ProductType.Digital,
             };
 
             using (var stream = File.OpenRead("cat.jpg"))
@@ -109,7 +109,7 @@ namespace SendOwl.Test
             created.Name.ShouldBe(product.Name);
 
             created.Price = "5.00";
-            created.Product_type = ProductType.service;
+            created.Product_type = ProductType.Service;
 
             var updatedProduct = await endpoint.UpdateAsync(created);
             updatedProduct.Price.ShouldBe(created.Price);

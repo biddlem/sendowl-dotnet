@@ -55,7 +55,7 @@ namespace SendOwl.Test
             {
                 Name = TestProductName,
                 Price = "18.99",
-                Product_type = ProductType.Software
+                Product_type = ProductType.software
             };
 
             var result = await endpoint.CreateAsync(product);
@@ -77,7 +77,7 @@ namespace SendOwl.Test
             {
                 Name = TestProductName + "[Cat]",
                 Price = "1.99",
-                Product_type = ProductType.Digital,
+                Product_type = ProductType.digital,
             };
 
             using (var stream = File.OpenRead("cat.jpg"))
@@ -107,7 +107,7 @@ namespace SendOwl.Test
             created.Name.ShouldBe(product.Name);
 
             created.Price = "5.00";
-            created.Product_type = ProductType.Service;
+            created.Product_type = ProductType.service;
 
             var updatedProduct = await endpoint.UpdateAsync(created);
             updatedProduct.Price.ShouldBe(created.Price);

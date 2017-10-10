@@ -2,12 +2,12 @@
 {
     public enum ProductType
     {
-        Unknown = 0,
-        Digital = 1,
-        Software = 2,
-        Redirect = 3,
-        Tangible = 4,
-        Service = 5,
-        Drip = 6
+        unknown = 0,
+        digital = 1,
+        software = 2,
+        redirect = 3,
+        tangible = 4,
+        service = 5,
+        drip = 6
     }
 }

@@ -41,7 +41,7 @@ namespace SendOwl.Test
                     {
                         Name = $"Bundle product {i} [test]",
                         Price = $"1{i}.99",
-                        Product_type = ProductType.Digital
+                        Product_type = ProductType.digital
                     }).ContinueWith(p => { CreatedProductIds.Add(p.Result.Id); return p.Result.Id; });
                     tasks.Add(task);
                 }

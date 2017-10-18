@@ -51,16 +51,18 @@ namespace SendOwl.Test
         [Fact]
         public async Task CreateAsync()
         {
+            var fileURL = "http://file.com/file";
             var product = new SendOwlProduct
             {
                 Name = TestProductName,
                 Price = "18.99",
-                Product_type = ProductType.Software,
+                Product_type = ProductType.software,
                 License_type = "MIT",
-                Self_hosted_url = "http://file.com/file"
+                Self_hosted_url = fileURL
             };
 
             var result = await endpoint.CreateAsync(product);
+            result.Self_hosted_url.ShouldBe(fileURL);
             CreatedProductIds.Add(result.Id);
             result.Name.ShouldBe(product.Name);
             result.Price.ShouldBe(product.Price);
@@ -79,7 +81,7 @@ namespace SendOwl.Test
             {
                 Name = TestProductName + "[Cat]",
                 Price = "1.99",
-                Product_type = ProductType.Digital,
+                Product_type = ProductType.digital,
             };
 
             using (var stream = File.OpenRead("cat.jpg"))
@@ -109,7 +111,7 @@ namespace SendOwl.Test
             created.Name.ShouldBe(product.Name);
 
             created.Price = "5.00";
-            created.Product_type = ProductType.Service;
+            created.Product_type = ProductType.service;
 
             var updatedProduct = await endpoint.UpdateAsync(created);
             updatedProduct.Price.ShouldBe(created.Price);

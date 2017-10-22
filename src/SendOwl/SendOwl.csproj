@@ -12,8 +12,9 @@
     <Description>SendOwl API client</Description>	
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseUrl>https://github.com/challengerdeep/sendowl-dotnet/blob/master/LICENSE</PackageLicenseUrl>
-    <RepositoryUrl>https://github.com/challengerdeep/sendowl-dotnet</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/challengerdeep/sendowl-dotnet</PackageProjectUrl>
     <PackageTags>SendOwl SendOwl-API</PackageTags>
+    <RepositoryUrl>https://github.com/challengerdeep/sendowl-dotnet</RepositoryUrl>
     <OutputTypeEx>library</OutputTypeEx>
     <StartupObject />
     <AssemblyName>SendOwl</AssemblyName>

@@ -44,6 +44,7 @@ namespace SendOwl.Test
         public async Task SearchAsync()
         {
             if (!CreatedSubcriptionIds.Any()) await CreateSubscription();
+            await Task.Delay(3000); //takes a few sec for SendOwl to index...
             var subscriptions = await endpoint.SearchAsync("test");
             subscriptions.ShouldNotBeEmpty();
         }

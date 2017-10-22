@@ -7,6 +7,8 @@ SendOwl API client
 
 ## Usage
 
+Add an API key at [sendowl.com](https://www.sendowl.com) under Advanced > API.
+
 Initialize the client with your key and secret
 
 ```c#

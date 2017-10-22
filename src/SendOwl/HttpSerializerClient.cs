@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SendOwl
@@ -22,9 +23,10 @@ namespace SendOwl
     public class HttpSerializerClient : IHttpSerializerClient
     {
         private readonly HttpClient client;
+        private readonly SemaphoreSlim httpSemaphore;
         private const string JsonContentType = "application/json";
 
-        public HttpSerializerClient(string baseUrl, string apiKey, string apiSecret)
+        public HttpSerializerClient(string baseUrl, string apiKey, string apiSecret, int maxConcurrentRequests = 1)
         {
             var handler = new HttpClientHandler
             {
@@ -36,17 +38,20 @@ namespace SendOwl
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(JsonContentType));
             client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
+            httpSemaphore = new SemaphoreSlim(maxConcurrentRequests);
         }
 
         public async Task<T> GetAsync<T>(string relativeUrl)
         {
-            return LowercaseJsonSerializer.DeserializeObject<T>(await client.GetStringAsync(relativeUrl));
+            return await LimitConcurrentRequests(async () =>
+                 LowercaseJsonSerializer.DeserializeObject<T>(await client.GetStringAsync(relativeUrl)));
         }
 
         public async Task<T> PostAsync<T>(string relativeUrl, T obj)
         {
             var json = LowercaseJsonSerializer.SerializeObject(obj);
-            var response = await client.PostAsync(relativeUrl, new StringContent(json, Encoding.UTF8, JsonContentType));
+            var response = await LimitConcurrentRequests(async () => await
+                 client.PostAsync(relativeUrl, new StringContent(json, Encoding.UTF8, JsonContentType)));
             var content = await response.Content.ReadAsStringAsync();
 
             try
@@ -65,7 +70,8 @@ namespace SendOwl
         public async Task PutAsync<T>(string relativeUrl, T obj)
         {
             var json = LowercaseJsonSerializer.SerializeObject(obj);
-            var response = await client.PutAsync(relativeUrl, new StringContent(json, Encoding.UTF8, JsonContentType));
+            var response = await LimitConcurrentRequests(async () => await
+                client.PutAsync(relativeUrl, new StringContent(json, Encoding.UTF8, JsonContentType)));
             var content = await response.Content.ReadAsStringAsync();
 
             try
@@ -80,12 +86,13 @@ namespace SendOwl
 
         public async Task DeleteAsync(string relativeUrl)
         {
-            (await client.DeleteAsync(relativeUrl)).EnsureSuccessStatusCode();
+            (await LimitConcurrentRequests(async () => await client.DeleteAsync(relativeUrl))).EnsureSuccessStatusCode();
         }
 
         public async Task<TResult> PostMultipartAsync<TResult, YObject>(string relativeUrl, YObject obj, string resource)
         {
-            return await PostMultipartAsync<TResult, YObject>(relativeUrl, obj, resource, null, null);
+            return await LimitConcurrentRequests(async () => await 
+                PostMultipartAsync<TResult, YObject>(relativeUrl, obj, resource, null, null));
         }
 
         public async Task<TResult> PostMultipartAsync<TResult, YObject>(string relativeUrl, YObject obj, string resource, Stream stream, string fileName)
@@ -107,7 +114,7 @@ namespace SendOwl
                 fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse("application/octet-stream");
                 form.Add(fileContent, $"{resource}[attachment]", fileName);
             }
-            var response = await client.PostAsync(relativeUrl, form);
+            var response = await LimitConcurrentRequests(async () => await client.PostAsync(relativeUrl, form));
             var content = await response.Content.ReadAsStringAsync();
             try
             {
@@ -127,6 +134,19 @@ namespace SendOwl
                 return Activator.CreateInstance(type);
             }
             return null;
+        }
+
+        private async Task<T> LimitConcurrentRequests<T>(Func<Task<T>> action)
+        {
+            try
+            {
+                await httpSemaphore.WaitAsync();
+                return await action();
+            }
+            finally
+            {
+                httpSemaphore.Release();
+            }
         }
 
         public void Dispose()

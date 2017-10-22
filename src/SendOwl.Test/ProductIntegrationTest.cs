@@ -106,6 +106,7 @@ namespace SendOwl.Test
             };
 
             var created = await endpoint.CreateAsync(product);
+            await Task.Delay(5000); //API returns 500 if updating too fast after creation
             CreatedProductIds.Add(created.Id);
             created.Price.ShouldBe(product.Price);
             created.Name.ShouldBe(product.Name);

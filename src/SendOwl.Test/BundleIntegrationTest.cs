@@ -86,6 +86,7 @@ namespace SendOwl.Test
             };
 
             var created = await endpoint.CreateAsync(bundle);
+            await Task.Delay(5000); //API returns 500 if updating too fast after creation
             CreatedBundleIds.Add(created.Id);
             created.Price.ShouldBe(bundle.Price);
             created.Name.ShouldBe(bundle.Name);

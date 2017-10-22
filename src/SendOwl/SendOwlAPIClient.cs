@@ -10,6 +10,7 @@ namespace SendOwl
         public ProductEndpoint Product => new ProductEndpoint(client);
         public BundleEndpoint Bundle => new BundleEndpoint(client);
         public SubscriptionEndpoint Subscription => new SubscriptionEndpoint(client);
+        public DiscountEndpoint Discount => new DiscountEndpoint(client);
 
         public SendOwlAPIClient(string apiKey, string apiSecret)
             :this(new HttpSerializerClient(BaseUrl, apiKey, apiSecret))

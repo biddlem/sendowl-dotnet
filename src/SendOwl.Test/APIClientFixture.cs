@@ -17,6 +17,7 @@ namespace SendOwl.Test
         public List<long> CreatedProductIds { get; } = new List<long>(8);
         public List<int> CreatedBundleIds { get; } = new List<int>(8);
         public List<int> CreatedSubscriptionIds { get; } = new List<int>(8);
+        public List<int> CreatedDiscountIds { get; } = new List<int>(8);
 
         static APIClientFixture()
         {
@@ -60,6 +61,7 @@ namespace SendOwl.Test
                     tasks.AddRange(CreatedProductIds.Select(x => SendOwlAPIClient.Product.DeleteAsync(x)));
                     tasks.AddRange(CreatedBundleIds.Select(x => SendOwlAPIClient.Bundle.DeleteAsync(x)));
                     tasks.AddRange(CreatedSubscriptionIds.Select(x => SendOwlAPIClient.Subscription.DeleteAsync(x)));
+                    tasks.AddRange(CreatedDiscountIds.Select(x => SendOwlAPIClient.Discount.DeleteAsync(x)));
                     Task.WhenAll(tasks).GetAwaiter().GetResult();
                 }
                 catch

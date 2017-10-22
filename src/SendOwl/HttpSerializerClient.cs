@@ -14,6 +14,7 @@ namespace SendOwl
     {
         Task<T> GetAsync<T>(string relativeUrl);
         Task<T> PostAsync<T>(string relativeUrl, T obj);
+        Task PostNoResponseAsync(string relativeUrl, object obj = null);
         Task PutAsync<T>(string relativeUrl, T obj);
         Task DeleteAsync(string relativeUrl);
         Task<TResult> PostMultipartAsync<TResult, YObject>(string relativeUrl, YObject obj, string resource);
@@ -47,6 +48,31 @@ namespace SendOwl
                  LowercaseJsonSerializer.DeserializeObject<T>(await client.GetStringAsync(relativeUrl)));
         }
 
+        public async Task PostNoResponseAsync(string relativeUrl, object obj = null)
+        {
+            {
+                StringContent httpContent = null;
+                if(obj != null)
+                {
+                    var json = LowercaseJsonSerializer.SerializeObject(obj);
+                    httpContent = new StringContent(json, Encoding.UTF8, JsonContentType);
+                }
+                
+                var response = await LimitConcurrentRequests(async () => await
+                     client.PostAsync(relativeUrl, httpContent));
+                var content = await response.Content.ReadAsStringAsync();
+
+                try
+                {
+                    response.EnsureSuccessStatusCode();
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException(content, ex);
+                }
+            }
+        }
+
         public async Task<T> PostAsync<T>(string relativeUrl, T obj)
         {
             var json = LowercaseJsonSerializer.SerializeObject(obj);
@@ -62,7 +88,6 @@ namespace SendOwl
             {
                 throw new InvalidOperationException(content, ex);
             }
-            
             
             return LowercaseJsonSerializer.DeserializeObject<T>(content);
         }

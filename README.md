@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/challengerdeep/sendowl-dotnet.svg?token=npq1hDeEFws5qTkAZ6M4&branch=master)](https://travis-ci.com/challengerdeep/sendowl-dotnet)
+[![Build Status](https://travis-ci.org/challengerdeep/sendowl-dotnet.svg?branch=master)](https://travis-ci.org/challengerdeep/sendowl-dotnet)
 
 # SendOwl-dotnet
 SendOwl API client

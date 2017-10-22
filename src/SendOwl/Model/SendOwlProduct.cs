@@ -3,10 +3,10 @@ using System;
 
 namespace SendOwl.Model
 {
-    public class SendOwlProduct
+    public class SendOwlProduct : SendOwlObject<long>
     {
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public long Id { get; set; }
+        public override long Id { get; set; }
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public ProductType Product_type { get; set; }
         public string Name { get; set; }

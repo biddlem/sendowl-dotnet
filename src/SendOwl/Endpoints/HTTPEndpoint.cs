@@ -4,29 +4,33 @@ using System.Threading.Tasks;
 
 namespace SendOwl.Endpoints
 {
-    public abstract class HTTPEndpoint<T, Y, Z> : Endpoint where Y : IListItem<T>, new() where T: SendOwlObject<Z>
+    public abstract class HTTPEndpoint<TObject, TCollection, TId> where TCollection : IListItem<TObject>, new() where TObject: SendOwlObject<TId>
     {
+        public abstract string Path { get; }
+        internal readonly IHttpSerializerClient httpClient;
+
         public HTTPEndpoint(IHttpSerializerClient httpClient)
-            : base(httpClient)
-        { }
+        {
+            this.httpClient = httpClient;
+        }
 
         /// <summary>
         /// Get item by id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<T> GetAsync(object id)
+        public async Task<TObject> GetAsync(object id)
         {
-            return (await httpClient.GetAsync<Y>($"{Path}/{id}").ConfigureAwait(false)).Value;
+            return (await httpClient.GetAsync<TCollection>($"{Path}/{id}").ConfigureAwait(false)).Value;
         }
 
         /// <summary>
         /// Get all items
         /// </summary>
         /// <returns></returns>
-        public async Task<List<T>> GetAllAsync()
+        public async Task<List<TObject>> GetAllAsync()
         {
-            return await PaginationHelper.GetAllAsync<T, Y>(httpClient, Path, s => s.Value).ConfigureAwait(false);
+            return await PaginationHelper.GetAllAsync<TObject, TCollection>(httpClient, Path, s => s.Value).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -34,9 +38,9 @@ namespace SendOwl.Endpoints
         /// </summary>
         /// <param name="term"></param>
         /// <returns></returns>
-        public async Task<List<T>> SearchAsync(string term)
+        public async Task<List<TObject>> SearchAsync(string term)
         {
-            return await PaginationHelper.GetAllAsync<T, Y>(httpClient, $"{Path}/search?term={term}", s => s.Value).ConfigureAwait(false);
+            return await PaginationHelper.GetAllAsync<TObject, TCollection>(httpClient, $"{Path}/search?term={term}", s => s.Value).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -44,9 +48,9 @@ namespace SendOwl.Endpoints
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public async Task<T> CreateAsync(T obj)
+        public async Task<TObject> CreateAsync(TObject obj)
         {
-            return (await httpClient.PostAsync(Path, new Y { Value = obj }).ConfigureAwait(false)).Value;
+            return (await httpClient.PostAsync(Path, new TCollection { Value = obj }).ConfigureAwait(false)).Value;
         }
 
         /// <summary>
@@ -54,9 +58,9 @@ namespace SendOwl.Endpoints
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public async Task<T> UpdateAsync(T obj)
+        public async Task<TObject> UpdateAsync(TObject obj)
         {
-            await httpClient.PutAsync($"{Path}/{obj.Id}", new Y { Value = obj }).ConfigureAwait(false);
+            await httpClient.PutAsync($"{Path}/{obj.Id}", new TCollection { Value = obj }).ConfigureAwait(false);
             return await GetAsync(obj.Id).ConfigureAwait(false);
         }
 
@@ -65,7 +69,7 @@ namespace SendOwl.Endpoints
         /// </summary>
         /// <param name="item id"></param>
         /// <returns></returns>
-        public async Task DeleteAsync(Z id)
+        public async Task DeleteAsync(TId id)
         {
             await httpClient.DeleteAsync($"{Path}/{id}").ConfigureAwait(false);
         }

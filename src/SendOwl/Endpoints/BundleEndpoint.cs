@@ -1,6 +1,4 @@
 ﻿using SendOwl.Model;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace SendOwl.Endpoints
 {

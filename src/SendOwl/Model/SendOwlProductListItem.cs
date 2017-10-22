@@ -1,7 +1,10 @@
-﻿namespace SendOwl.Model
+﻿using Newtonsoft.Json;
+
+namespace SendOwl.Model
 {
-    public class SendOwlProductListItem
+    public class SendOwlProductListItem : IListItem<SendOwlProduct>
     {
-        public SendOwlProduct Product { get; set; }
+        [JsonProperty(PropertyName = "product")]
+        public SendOwlProduct Value { get; set; }
     }
 }

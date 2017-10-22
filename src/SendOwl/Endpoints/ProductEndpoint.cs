@@ -1,11 +1,10 @@
 ﻿using SendOwl.Model;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
 namespace SendOwl.Endpoints
 {
-    public class ProductEndpoint : Endpoint
+    public class ProductEndpoint : HTTPEndpoint<SendOwlProduct, SendOwlProductListItem, long>
     {
         public override string Path => "products";
 
@@ -14,40 +13,11 @@ namespace SendOwl.Endpoints
         { }
 
         /// <summary>
-        /// Get product by id
-        /// </summary>
-        /// <param name="productId"></param>
-        /// <returns></returns>
-        public async Task<SendOwlProduct> GetAsync(long productId)
-        {
-            return (await httpClient.GetAsync<SendOwlProductListItem>($"{Path}/{productId}")).Product;
-        }
-
-        /// <summary>
-        /// Search for product by name
-        /// </summary>
-        /// <param name="term"></param>
-        /// <returns></returns>
-        public async Task<List<SendOwlProduct>> SearchAsync(string term)
-        {
-            return await PaginationHelper.GetAllAsync<SendOwlProduct, SendOwlProductListItem>(httpClient, $"{Path}/search?term={term}", p => p.Product);
-        }
-
-        /// <summary>
-        /// Get all products
-        /// </summary>
-        /// <returns></returns>
-        public async Task<List<SendOwlProduct>> GetAllAsync()
-        {
-            return await PaginationHelper.GetAllAsync<SendOwlProduct, SendOwlProductListItem>(httpClient, Path, p => p.Product);
-        }
-
-        /// <summary>
         /// Create product
         /// </summary>
         /// <param name="product"></param>
         /// <returns></returns>
-        public async Task<SendOwlProduct> CreateAsync(SendOwlProduct product)
+        public new async Task<SendOwlProduct> CreateAsync(SendOwlProduct product)
         {
             return await CreateAsync(product, null, null);
         }
@@ -62,28 +32,7 @@ namespace SendOwl.Endpoints
         public async Task<SendOwlProduct> CreateAsync(SendOwlProduct product, Stream stream, string fileName)
         {
             return (await httpClient.PostMultipartAsync<SendOwlProductListItem, SendOwlProduct>("products.json", product, "product", stream, fileName)
-                .ConfigureAwait(false)).Product;
-        }
-
-        /// <summary>
-        /// Update product
-        /// </summary>
-        /// <param name="product"></param>
-        /// <returns></returns>
-        public async Task<SendOwlProduct> UpdateAsync(SendOwlProduct product)
-        {
-            await httpClient.PutAsync($"{Path}/{product.Id}", new SendOwlProductListItem { Product = product }).ConfigureAwait(false);
-            return await GetAsync(product.Id).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Delete product
-        /// </summary>
-        /// <param name="productId"></param>
-        /// <returns></returns>
-        public async Task DeleteAsync(long productId)
-        {
-            await httpClient.DeleteAsync($"{Path}/{productId}").ConfigureAwait(false);
+                .ConfigureAwait(false)).Value;
         }
     }
 }

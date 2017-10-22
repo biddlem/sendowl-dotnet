@@ -141,7 +141,7 @@ namespace SendOwl
             try
             {
                 await httpSemaphore.WaitAsync();
-                return await action();
+                return await action().ConfigureAwait(false);
             }
             finally
             {

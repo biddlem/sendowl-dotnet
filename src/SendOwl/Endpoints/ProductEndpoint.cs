@@ -61,7 +61,8 @@ namespace SendOwl.Endpoints
         /// <returns></returns>
         public async Task<SendOwlProduct> CreateAsync(SendOwlProduct product, Stream stream, string fileName)
         {
-            return (await httpClient.PostMultipartAsync<SendOwlProductListItem, SendOwlProduct>("products.json", product, "product", stream, fileName)).Product;
+            return (await httpClient.PostMultipartAsync<SendOwlProductListItem, SendOwlProduct>("products.json", product, "product", stream, fileName)
+                .ConfigureAwait(false)).Product;
         }
 
         /// <summary>
@@ -71,8 +72,8 @@ namespace SendOwl.Endpoints
         /// <returns></returns>
         public async Task<SendOwlProduct> UpdateAsync(SendOwlProduct product)
         {
-            await httpClient.PutAsync($"{Path}/{product.Id}", new SendOwlProductListItem { Product = product });
-            return await GetAsync(product.Id);
+            await httpClient.PutAsync($"{Path}/{product.Id}", new SendOwlProductListItem { Product = product }).ConfigureAwait(false);
+            return await GetAsync(product.Id).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -82,7 +83,7 @@ namespace SendOwl.Endpoints
         /// <returns></returns>
         public async Task DeleteAsync(long productId)
         {
-            await httpClient.DeleteAsync($"{Path}/{productId}");
+            await httpClient.DeleteAsync($"{Path}/{productId}").ConfigureAwait(false);
         }
     }
 }

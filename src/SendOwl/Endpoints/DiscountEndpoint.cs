@@ -19,7 +19,7 @@ namespace SendOwl.Endpoints
         /// <returns></returns>
         public new async Task<SendOwlDiscount> CreateAsync(SendOwlDiscount obj)
         {
-            return await base.CreateAsync(obj);
+            return await base.CreateAsync(obj).ConfigureAwait(false);
         }
     }
 }

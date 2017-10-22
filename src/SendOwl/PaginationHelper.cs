@@ -16,7 +16,7 @@ namespace SendOwl
             while (true)
             {
                 var query = $"{delimiter}per_page={ItemsPerPage}&page={page}";
-                var response = await client.GetAsync<IEnumerable<Y>>(relativeUrl + query);
+                var response = await client.GetAsync<IEnumerable<Y>>(relativeUrl + query).ConfigureAwait(false);
                 if (!response.Any()) break;
                 items.AddRange(response.Select(selector));
                 page++;

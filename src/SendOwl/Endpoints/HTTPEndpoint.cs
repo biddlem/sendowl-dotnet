@@ -17,7 +17,7 @@ namespace SendOwl.Endpoints
         /// <returns></returns>
         public async Task<T> GetAsync(object id)
         {
-            return (await httpClient.GetAsync<Y>($"{Path}/{id}")).Value;
+            return (await httpClient.GetAsync<Y>($"{Path}/{id}").ConfigureAwait(false)).Value;
         }
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace SendOwl.Endpoints
         /// <returns></returns>
         public async Task<List<T>> GetAllAsync()
         {
-            return await PaginationHelper.GetAllAsync<T, Y>(httpClient, Path, s => s.Value);
+            return await PaginationHelper.GetAllAsync<T, Y>(httpClient, Path, s => s.Value).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace SendOwl.Endpoints
         /// <returns></returns>
         public async Task<List<T>> SearchAsync(string term)
         {
-            return await PaginationHelper.GetAllAsync<T, Y>(httpClient, $"{Path}/search?term={term}", s => s.Value);
+            return await PaginationHelper.GetAllAsync<T, Y>(httpClient, $"{Path}/search?term={term}", s => s.Value).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace SendOwl.Endpoints
         /// <returns></returns>
         public async Task<T> CreateAsync(T obj)
         {
-            return (await httpClient.PostAsync(Path, new Y { Value = obj })).Value;
+            return (await httpClient.PostAsync(Path, new Y { Value = obj }).ConfigureAwait(false)).Value;
         }
 
         /// <summary>
@@ -56,8 +56,8 @@ namespace SendOwl.Endpoints
         /// <returns></returns>
         public async Task<T> UpdateAsync(T obj)
         {
-            await httpClient.PutAsync($"{Path}/{obj.Id}", new Y { Value = obj });
-            return await GetAsync(obj.Id);
+            await httpClient.PutAsync($"{Path}/{obj.Id}", new Y { Value = obj }).ConfigureAwait(false);
+            return await GetAsync(obj.Id).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace SendOwl.Endpoints
         /// <returns></returns>
         public async Task DeleteAsync(Z id)
         {
-            await httpClient.DeleteAsync($"{Path}/{id}");
+            await httpClient.DeleteAsync($"{Path}/{id}").ConfigureAwait(false);
         }
     }
 }

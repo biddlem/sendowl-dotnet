@@ -19,6 +19,7 @@ namespace SendOwl
                 var response = await client.GetAsync<IEnumerable<TCollection>>(relativeUrl + query).ConfigureAwait(false);
                 if (!response.Any()) break;
                 items.AddRange(response.Select(selector));
+                if (response.Count() < ItemsPerPage) break;
                 page++;
             }
             return items;

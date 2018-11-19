@@ -56,6 +56,11 @@ Delete product
 await sendOwl.Product.DeleteAsync(256);
 ```
 
+Search for product by Shopify variant ID
+```c#
+var products = await sendOwl.Product.ShopifyLookupAsync(123456789);
+```
+
 ### Bundle
 
 Get bundle by id

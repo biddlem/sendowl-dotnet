@@ -1,4 +1,5 @@
-﻿using SendOwl.Model;
+﻿using System.Collections.Generic;
+using SendOwl.Model;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -33,6 +34,16 @@ namespace SendOwl.Endpoints
         {
             return (await httpClient.PostMultipartAsync<SendOwlProductListItem, SendOwlProduct>("products.json", product, "product", stream, fileName)
                 .ConfigureAwait(false)).Value;
+        }
+
+        /// <summary>
+        /// Get items by shopify variant id
+        /// </summary>
+        /// <param name="variantId"></param>
+        /// <returns></returns>
+        public async Task<List<SendOwlProduct>> ShopifyLookupAsync(object variantId)
+        {
+            return await PaginationHelper.GetAllAsync<SendOwlProduct, SendOwlProductListItem>(httpClient, $"products/shopify_lookup?variant_id={variantId}", s => s.Value).ConfigureAwait(false);
         }
     }
 }

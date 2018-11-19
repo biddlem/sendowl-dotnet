@@ -18,6 +18,7 @@ namespace SendOwl
         Task DeleteAsync(string relativeUrl);
         Task<TResult> PostMultipartAsync<TResult, YObject>(string relativeUrl, YObject obj, string resource);
         Task<TResult> PostMultipartAsync<TResult, YObject>(string relativeUrl, YObject obj, string resource, Stream stream, string fileName);
+        Task PutMultipartAsync<YObject>(string relativeUrl, YObject obj, string resource, Stream stream, string fileName);
     }
 
     public class HttpSerializerClient : IHttpSerializerClient
@@ -125,6 +126,37 @@ namespace SendOwl
                 throw new InvalidOperationException(content, ex);
             }
             return LowercaseJsonSerializer.DeserializeObject<TResult>(content);
+        }
+
+        public async Task PutMultipartAsync<YObject>(string relativeUrl, YObject obj, string resource, Stream stream, string fileName)
+        {
+            var form = new MultipartFormDataContent();
+            foreach (var prop in typeof(YObject).GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
+            {
+                if (prop.GetSetMethod() == null || !prop.CanWrite || !prop.CanRead) continue; //ignore not settable properties;
+                var name = prop.Name.ToLowerInvariant();
+                var value = prop.GetValue(obj, null);
+                var defaultValue = GetDefault(prop.PropertyType);
+                if (value == null || (name == "id" && value.Equals(defaultValue))) continue; //ignore id property if it is null or default
+                form.Add(new StringContent(value.ToString()), $"{resource}[{name}]");
+            }
+
+            if (stream != null)
+            {
+                var fileContent = new StreamContent(stream);
+                fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse("application/octet-stream");
+                form.Add(fileContent, $"{resource}[attachment]", fileName);
+            }
+            var response = await LimitConcurrentRequests(async () => await client.PutAsync(relativeUrl, form));
+            var content = await response.Content.ReadAsStringAsync();
+            try
+            {
+                response.EnsureSuccessStatusCode();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException(content, ex);
+            }
         }
 
         private static object GetDefault(Type type)

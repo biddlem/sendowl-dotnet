@@ -1,4 +1,5 @@
-﻿using SendOwl.Model;
+﻿using System.Collections.Generic;
+using SendOwl.Model;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -34,5 +35,19 @@ namespace SendOwl.Endpoints
             return (await httpClient.PostMultipartAsync<SendOwlProductListItem, SendOwlProduct>("products.json", product, "product", stream, fileName)
                 .ConfigureAwait(false)).Value;
         }
+
+        /// <summary>
+        /// Update product with uploaded file
+        /// </summary>
+        /// <param name="product"></param>
+        /// <param name="file stream"></param>
+        /// <param name="file name"></param>
+        /// <returns></returns>
+        public async Task<SendOwlProduct> UpdateAsync(SendOwlProduct product, Stream stream, string fileName)
+        {
+            await httpClient.PutMultipartAsync<SendOwlProduct>($"products/{product.Id}", product, "product", stream, fileName).ConfigureAwait(false);
+            return await GetAsync(product.Id).ConfigureAwait(false);
+        }
+
     }
 }

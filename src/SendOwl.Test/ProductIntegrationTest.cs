@@ -49,6 +49,40 @@ namespace SendOwl.Test
         }
 
         [Fact]
+        public async Task ShopifyLookupAsync()
+        {
+            var shopifyVariantId = long.MaxValue;
+
+            var shopifyProduct = new SendOwlProduct
+            {
+                Name = $"{TestProductName} [shopify test]",
+                Price = "1.99",
+                Product_type = ProductType.digital,
+                Self_hosted_url = "http://test.com/file",
+                Shopify_variant_id = shopifyVariantId
+            };
+
+            var created = await endpoint.CreateAsync(shopifyProduct);
+
+            CreatedProductIds.Add(created.Id);
+
+            await Task.Delay(3000); //takes a few sec for SendOwl to index...
+
+            var result = await endpoint.ShopifyLookupAsync(shopifyVariantId);
+
+            result.ShouldNotBeNull();
+            result.Count.ShouldBe(1);
+
+            var expectedResult = result.First();
+
+            expectedResult.Name.ShouldBe(shopifyProduct.Name);
+            expectedResult.Price.ShouldBe(shopifyProduct.Price);
+            expectedResult.Product_type.ShouldBe(shopifyProduct.Product_type);
+            expectedResult.Self_hosted_url.ShouldBe(shopifyProduct.Self_hosted_url);
+            expectedResult.Shopify_variant_id.ShouldBe(shopifyProduct.Shopify_variant_id);
+        }
+
+        [Fact]
         public async Task CreateAsync()
         {
             var fileURL = "http://file.com/file";

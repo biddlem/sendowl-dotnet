@@ -120,6 +120,39 @@ namespace SendOwl.Test
         }
 
         [Fact]
+        public async Task UpdateAsync_With_File_Upload()
+        {
+            var product = new SendOwlProduct
+            {
+                Name = TestProductName + "[Update With File]",
+                Price = "1.99",
+                Product_type = ProductType.digital,
+                Self_hosted_url = "http://test.com/file"
+            };
+
+            var created = await endpoint.CreateAsync(product);
+            await Task.Delay(5000); //API returns 500 if updating too fast after creation
+            CreatedProductIds.Add(created.Id);
+            created.Price.ShouldBe(product.Price);
+            created.Name.ShouldBe(product.Name);
+
+            created.Price = "2.00";
+            created.Self_hosted_url = String.Empty;
+
+            using (var stream = File.OpenRead("cat.jpg"))
+            {
+                var result = await endpoint.UpdateAsync(created, stream, "cat.jpg");
+
+                result.Name.ShouldBe(created.Name);
+                result.Price.ShouldBe(created.Price);
+                result.Product_type.ShouldBe(created.Product_type);
+                result.Self_hosted_url.ShouldBe(null);
+                result.Attachment.Filename.ShouldBe("cat.jpg");
+                result.Attachment.Size.ShouldBe(stream.Length);
+            }
+        }
+
+        [Fact]
         public async Task DeleteAsync()
         {
             var product = new SendOwlProduct

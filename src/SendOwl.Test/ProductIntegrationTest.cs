@@ -138,6 +138,7 @@ namespace SendOwl.Test
 
             created.Price = "2.00";
             created.Self_hosted_url = String.Empty;
+            created.Pdf_stamping = null;
 
             using (var stream = File.OpenRead("cat.jpg"))
             {
